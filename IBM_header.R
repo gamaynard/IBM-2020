@@ -135,6 +135,14 @@ if(nDams==0){
 ##    9(1):357-372. 
 ##    DOI: 10.1080/19425120.2017.1334723
 maxGrowth=5
+## Carrying capacity of 6 eggs per square meter of spawning habitat is
+##    based on
+## Jonsson, N., B. Jonsson, and L.P. Hansen. 1998. The relative role
+##    of density-dependent and density-independent survival in the life
+##    cycle of Atlantic Salmon Salmo salar. Journal of Animal Ecology.
+##    67(5):751-762. 
+##    DOI: 10.1046/j.1365-2656.1998.00237.x
+cc=6
 ## -----------------------------------
 ## SECTION 3: SET UP
 ## WARNING: THE USER SHOULD NOT CHANGE ANY OF THESE VALUES
