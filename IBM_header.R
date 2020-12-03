@@ -49,6 +49,8 @@ library(truncnorm)
 betas=read.csv(
   file="MFBetas.csv"
   )
+## Remove any NA values from the beta dataframe
+betas=na.omit(betas)
 ## -----------------------------------
 ## SECTION 1: USER INPUTS
 ## Narrow sense heritability of size at age (must be between 0 and 1)
@@ -134,3 +136,56 @@ if(nDams==0){
 ##    DOI: 10.1080/19425120.2017.1334723
 maxGrowth=5
 ## -----------------------------------
+## SECTION 3: SET UP
+## WARNING: THE USER SHOULD NOT CHANGE ANY OF THESE VALUES
+## Set the starting simulation number to "1"
+s=1
+## Create a matrix to store simulation results
+Results=matrix(
+  nrow=simNum*nYears,
+  ncol=21
+)
+colnames(Results)=c(
+  "SimNum",
+  "nDams",
+  "gHerit",
+  "sHerit",
+  "M:F",
+  "Year",
+  "n1SW",
+  "n2SW",
+  "nMSW",
+  "FL1SW",
+  "FL2SW",
+  "FL3SW",
+  "sd1SW",
+  "sd2SW",
+  "sd3SW",
+  "mGrowth",
+  "mGrilse",
+  "m2SW",
+  "S1SW",
+  "S2SW",
+  "SMSW"
+)
+## For each simulation, loop over the burn-in and simulation
+## scripts and iterate the simulation number
+for(i in 1:simNum){
+  source("IBM_burnin.R")
+  source("IBM_simulation.R")
+  s=s+1
+}
+## Write the results to a .csv file
+write.csv(
+  x=Results,
+  file=paste0(
+    "g",
+    gheritability*10,
+    "s",
+    sheritability*10,
+    "Results",
+    ndams,
+    "Dams.csv"
+  ),
+  row.names=FALSE
+)
