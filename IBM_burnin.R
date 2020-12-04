@@ -171,6 +171,16 @@ Recon=matrix(
   ncol=8,
   nrow=Recon
 )
+colnames(Recon)=c(
+  "Sex",
+  "FL",
+  "Age",
+  "Growth",
+  "grilseThresh",
+  "twoSWThresh",
+  "SWatMat",
+  "Spawns"
+)
 ## The growth coefficient is a random draw from a z distribution
 Recon[,4]=rnorm(
   n=nrow(Recon),
@@ -236,3 +246,53 @@ Recon[,1]=ifelse(
 )
 ## Set maturity thresholds based on life history
 Recon[,c(5,6)]=0
+Recon[,5]=ifelse(
+  Recon[,7]>=2,
+  rtruncnorm(
+    n=nrow(Recon),
+    a=Recon[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  rtruncnorm(
+    n=nrow(Recon),
+    a=-10000,
+    b=Recon[,4],
+    mean=0,
+    sd=1
+  )
+)
+Recon[,6]=ifelse(
+  Recon[,7]==3,
+  rtruncnorm(
+    n=nrow(Recon),
+    a=-10000,
+    b=Recon[,5],
+    mean=0,
+    sd=1
+  ),
+  Recon[,6]
+)
+Recon[,6]=ifelse(
+  Recon[,7]==2,
+  rtruncnorm(
+    n=nrow(Recon),
+    a=-10000,
+    b=Recon[,4],
+    mean=0,
+    sd=1
+  ),
+  Recon[,6]
+)
+Recon[,6]=ifelse(
+  Recon[,7]==1,
+  rtruncnorm(
+    n=nrow(Recon),
+    a=Recon[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  Recon[,6]
+)
