@@ -128,12 +128,14 @@ if(nDams==0){
   keltSurvival=0.429^nDams
 }
 ## At sea growth for adults is assumed to be between 0 and 5 cm annually
-## based on
+##    based on
 ## Izzo, Lisa K. and Joseph D. Zydlewski. 2018. Retrospective analysis
 ##    of seasonal ocean growth rates of two sea winter Atlantic Salmon 
 ##    in Eastern Maine using historic scales. Marine and Coastal Fisheries.
 ##    9(1):357-372. 
 ##    DOI: 10.1080/19425120.2017.1334723
+## In the simulation, at sea growth is treated as a draw from a uniform
+##    distribution between 0 and maxGrowth
 maxGrowth=5
 ## Carrying capacity of 6 eggs per square meter of spawning habitat is
 ##    based on

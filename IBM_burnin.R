@@ -70,6 +70,7 @@ rm(
     )
   )
 )
+
 ## Create a progress bar
 bpb=txtProgressBar(
   min=0,
@@ -82,9 +83,6 @@ bpb=txtProgressBar(
   ),
   style=3
 )
-## Set a starting number of eggs based on carrying capacity of eggs per
-##    m2 of spawning habitat
-S=cc*W
 
 ## Set starting size distributions based on "startSize"
 if(startSize=="modern"){
@@ -104,7 +102,12 @@ if(startSize=="modern"){
     sd3=2.07
   }
 }
-## Calculate number of parr present based on the number of eggs and
+
+## Set a starting number of eggs based on carrying capacity of eggs per
+##    m2 of spawning habitat
+S=cc*W
+
+## Initialize number of parr present based on the number of eggs and
 ##    freshwater survival
 ## New parr
 Parr0=round(
@@ -115,7 +118,8 @@ Parr0=round(
 Parr1=Parr0
 ## 2 year old parr
 Parr2=Parr1
-## Calculate the number of juveniles based on parr presence, smolt
+
+## Initialize the number of juveniles based on parr presence, smolt
 ##    survival and at sea survival
 ## 1SW juveniles
 Juveniles1=round(
@@ -132,3 +136,103 @@ Juveniles3=round(
   Parr2*0.99^rkm*marineSurvival^4,
   0
 )
+
+## The number of spawning adults is set at the upper limit of the
+##    estimated capacity of the Narraguagus River (USASAC 2015)
+Adults=800
+
+## The number of reconditioning adults is based on kelt survival in
+##    an undammed system and marine survival.
+Recon=round(
+  Adults*0.63*marineSurvival,
+  0
+)
+
+## The number of repeat spawn adults is based on the number of 
+##    reconditioning adults and marine survival
+Repeats=round(
+  Recon*marineSurvival,
+  0
+)
+
+## Create matrices to store each life history stage. These matrices
+##    will each have eight columns as follows:
+##    1) Sex (0=Male, 1=Female)
+##    2) Size (Fork Length measured in cm)
+##    3) Age (Years)
+##    4) Growth coefficient (z distribution, lower=slower growing)
+##    5) Individual threshold to become a grilse (z distribution)
+##    6) Individual threshold to become a 2SW (z distribution)
+##    7) Seawinters at maturity
+##    8) Prior spawns
+
+## Reconditioned spawners --------------------
+Recon=matrix(
+  ncol=8,
+  nrow=Recon
+)
+## The growth coefficient is a random draw from a z distribution
+Recon[,4]=rnorm(
+  n=nrow(Recon),
+  mean=0,
+  sd=1
+)
+## Fish in the upper 10% of the growth distribution are classified as
+##    grilse to match sea age proportions in Izzo and Zydlewski 2017
+Recon[,7]=ifelse(
+  Recon[,4]>=1.28,
+  1,
+  2
+)
+## Fish in the lower 3% of the growth distribution are classified as
+##    MSW to match sea age proportions in Izzo and Zydlewski 2017
+Recon[,7]=ifelse(
+  Recon[,4]<(-1.87),
+  3,
+  Recon[,7]
+)
+## Set the sizes of fish based on the starting size distribution
+##    selected and at sea growth
+Recon[,2]=ifelse(
+  Recon[,7]==1,
+  rnorm(
+    n=nrow(Recon),
+    mean=m1,
+    sd=sd1
+  ),
+  ifelse(
+    Recon[,7]==2,
+    rnorm(
+      n=nrow(Recon),
+      mean=m2,
+      sd=sd2
+    ),
+    rnorm(
+      n=nrow(Recon),
+      mean=m3,
+      sd=sd3
+    )
+  )
+)
+Recon[,2]=Recon[,2]+sample(
+  x=maxGrowth,
+  size=nrow(Recon),
+  replace=TRUE
+)
+## Set sex of fish based on life history (i.e., most grilse are males
+##    and most 2SW and MSW are females)
+Recon[,1]=ifelse(
+  Recon[,7]==1,
+  rbinom(
+    n=nrow(Recon),
+    size=1,
+    prob=0.015
+  ),
+  rbinom(
+    n=nrow(Recon),
+    size=1,
+    prob=0.55
+  )
+)
+## Set maturity thresholds based on life history
+Recon[,c(5,6)]=0
