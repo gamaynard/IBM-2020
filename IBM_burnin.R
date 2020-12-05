@@ -789,3 +789,392 @@ Juveniles1[,5]=ifelse(
     Juveniles1[,5]
   )
 )
+## 2 year parr -------------------
+Parr2=matrix(
+  ncol=8,
+  nrow=Parr2
+)
+## Growth coefficient can be anywhere in the z distribution
+Parr2[,4]=rnorm(
+  n=nrow(Parr2),
+  mean=0,
+  sd=1
+)
+## The fastest growing fish mature as grilse, moderate growers
+##    mature as 2SW fish and slow growers mature as 3SW fish
+Parr2[,7]=ifelse(
+  Parr2[,4]>=1.28,
+  1,
+  ifelse(
+    Parr2[,4]>-1.87&Parr2[,4]<1.28,
+    2,
+    ifelse(
+      Parr2[,4]<(-1.87),
+      3,
+      Parr2[,4]
+    )
+  )
+)
+## These fish are two years old
+Parr2[,3]=2
+## Fork length is drawn from the distributions specified at the start
+Parr2[,2]=ifelse(
+  Parr2[,7]==2,
+  rnorm(
+    n=nrow(Parr2),
+    mean=m2,
+    sd=sd2
+  ),
+  ifelse(
+    Parr2[,7]==3,
+    rnorm(
+      nrow(Parr2),
+      m3,
+      sd3
+    ),
+    ifelse(
+      Parr2[,7]==1,
+      rnorm(
+        nrow(Parr2),
+        m1,
+        sd1
+      ),
+      Parr2[,7]
+    )
+  )
+)
+## The sex distribution of 2+SW fish skews towards females (55:45, 
+##    F:M), but the sex distribution of 1SW fish skews towards males
+##    (98.5:1.5)
+Parr2[,1]=ifelse(
+  Parr2[,7]>=2,
+  rbinom(
+    n=nrow(Parr2),
+    size=1,
+    prob=0.55
+  ),
+  ifelse(
+    Parr2[,7]==1,
+    rbinom(
+      n=nrow(Parr2),
+      size=1,
+      prob=0.015
+    ),
+    Parr2[,7]
+  )
+)
+## Juveniles have never spawned previously
+Parr2[,8]=0
+## Assign maturity thresholds
+Parr2[,6]=ifelse(
+  Parr2[,7]==3,
+  rtruncnorm(
+    n=nrow(Parr2),
+    a=Parr2[,4],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr2[,7]==2,
+    rtruncnorm(
+      n=nrow(Parr2),
+      a=-Inf,
+      b=Parr2[,4],
+      mean=0,
+      sd=1
+    ),
+    ifelse(
+      Parr2[,7]==1,
+      rtruncnorm(
+        n=nrow(Parr2),
+        a=-Inf,
+        b=Parr2[,4],
+        mean=0,
+        sd=1
+      ),
+      Parr2[,6]
+    )
+  )
+)
+Parr2[,5]=ifelse(
+  Parr2[,7]>=2,
+  rtruncnorm(
+    n=nrow(Parr2),
+    a=Parr2[,6],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr2[,7]==1,
+    rtruncnorm(
+      n=nrow(Parr2),
+      a=Parr2[,6],
+      b=Parr2[,4],
+      mean=0,
+      sd=1
+    ),
+    Parr2[,5]
+  )
+)
+
+## 1 year parr -------------------
+Parr1=matrix(
+  ncol=8,
+  nrow=Parr1
+)
+## Growth coefficient can be anywhere in the z distribution
+Parr1[,4]=rnorm(
+  n=nrow(Parr1),
+  mean=0,
+  sd=1
+)
+## The fastest growing fish mature as grilse, moderate growers
+##    mature as 2SW fish and slow growers mature as 3SW fish
+Parr1[,7]=ifelse(
+  Parr1[,4]>=1.28,
+  1,
+  ifelse(
+    Parr1[,4]>-1.87&Parr1[,4]<1.28,
+    2,
+    ifelse(
+      Parr1[,4]<(-1.87),
+      3,
+      Parr1[,4]
+    )
+  )
+)
+## These fish are one year old
+Parr1[,3]=1
+## Fork length is drawn from the distributions specified at the start
+Parr1[,2]=ifelse(
+  Parr1[,7]==2,
+  rnorm(
+    n=nrow(Parr1),
+    mean=m2,
+    sd=sd2
+  ),
+  ifelse(
+    Parr1[,7]==3,
+    rnorm(
+      nrow(Parr1),
+      m3,
+      sd3
+    ),
+    ifelse(
+      Parr1[,7]==1,
+      rnorm(
+        nrow(Parr1),
+        m1,
+        sd1
+      ),
+      Parr1[,7]
+    )
+  )
+)
+## The sex distribution of 2+SW fish skews towards females (55:45, 
+##    F:M), but the sex distribution of 1SW fish skews towards males
+##    (98.5:1.5)
+Parr1[,1]=ifelse(
+  Parr1[,7]>=2,
+  rbinom(
+    n=nrow(Parr1),
+    size=1,
+    prob=0.55
+  ),
+  ifelse(
+    Parr1[,7]==1,
+    rbinom(
+      n=nrow(Parr1),
+      size=1,
+      prob=0.015
+    ),
+    Parr1[,7]
+  )
+)
+## Juveniles have never spawned previously
+Parr1[,8]=0
+## Assign maturity thresholds
+Parr1[,6]=ifelse(
+  Parr1[,7]==3,
+  rtruncnorm(
+    n=nrow(Parr1),
+    a=Parr1[,4],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr1[,7]==2,
+    rtruncnorm(
+      n=nrow(Parr1),
+      a=-Inf,
+      b=Parr1[,4],
+      mean=0,
+      sd=1
+    ),
+    ifelse(
+      Parr1[,7]==1,
+      rtruncnorm(
+        n=nrow(Parr1),
+        a=-Inf,
+        b=Parr1[,4],
+        mean=0,
+        sd=1
+      ),
+      Parr1[,6]
+    )
+  )
+)
+Parr1[,5]=ifelse(
+  Parr1[,7]>=2,
+  rtruncnorm(
+    n=nrow(Parr1),
+    a=Parr1[,6],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr1[,7]==1,
+    rtruncnorm(
+      n=nrow(Parr1),
+      a=Parr1[,6],
+      b=Parr1[,4],
+      mean=0,
+      sd=1
+    ),
+    Parr1[,5]
+  )
+)
+
+## Young of year parr -------------------
+Parr0=matrix(
+  ncol=8,
+  nrow=Parr0
+)
+## Growth coefficient can be anywhere in the z distribution
+Parr0[,4]=rnorm(
+  n=nrow(Parr0),
+  mean=0,
+  sd=1
+)
+## The fastest growing fish mature as grilse, moderate growers
+##    mature as 2SW fish and slow growers mature as 3SW fish
+Parr0[,7]=ifelse(
+  Parr0[,4]>=1.28,
+  1,
+  ifelse(
+    Parr0[,4]>-1.87&Parr0[,4]<1.28,
+    2,
+    ifelse(
+      Parr0[,4]<(-1.87),
+      3,
+      Parr0[,4]
+    )
+  )
+)
+## These fish hatched this year
+Parr0[,3]=0
+## Fork length is drawn from the distributions specified at the start
+Parr0[,2]=ifelse(
+  Parr0[,7]==2,
+  rnorm(
+    n=nrow(Parr0),
+    mean=m2,
+    sd=sd2
+  ),
+  ifelse(
+    Parr0[,7]==3,
+    rnorm(
+      nrow(Parr0),
+      m3,
+      sd3
+    ),
+    ifelse(
+      Parr0[,7]==1,
+      rnorm(
+        nrow(Parr0),
+        m1,
+        sd1
+      ),
+      Parr0[,7]
+    )
+  )
+)
+## The sex distribution of 2+SW fish skews towards females (55:45, 
+##    F:M), but the sex distribution of 1SW fish skews towards males
+##    (98.5:1.5)
+Parr0[,1]=ifelse(
+  Parr0[,7]>=2,
+  rbinom(
+    n=nrow(Parr0),
+    size=1,
+    prob=0.55
+  ),
+  ifelse(
+    Parr0[,7]==1,
+    rbinom(
+      n=nrow(Parr0),
+      size=1,
+      prob=0.015
+    ),
+    Parr0[,7]
+  )
+)
+## Juveniles have never spawned previously
+Parr0[,8]=0
+## Assign maturity thresholds
+Parr0[,6]=ifelse(
+  Parr0[,7]==3,
+  rtruncnorm(
+    n=nrow(Parr0),
+    a=Parr0[,4],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr0[,7]==2,
+    rtruncnorm(
+      n=nrow(Parr0),
+      a=-Inf,
+      b=Parr0[,4],
+      mean=0,
+      sd=1
+    ),
+    ifelse(
+      Parr0[,7]==1,
+      rtruncnorm(
+        n=nrow(Parr0),
+        a=-Inf,
+        b=Parr0[,4],
+        mean=0,
+        sd=1
+      ),
+      Parr0[,6]
+    )
+  )
+)
+Parr0[,5]=ifelse(
+  Parr0[,7]>=2,
+  rtruncnorm(
+    n=nrow(Parr0),
+    a=Parr0[,6],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Parr0[,7]==1,
+    rtruncnorm(
+      n=nrow(Parr0),
+      a=Parr0[,6],
+      b=Parr0[,4],
+      mean=0,
+      sd=1
+    ),
+    Parr0[,5]
+  )
+)
