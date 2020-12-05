@@ -421,3 +421,128 @@ Repeats[,6]=ifelse(
 ## For the purposes of initializing the model, all repeat 
 ##    spawners are assumed to have one prior spawning event
 Repeats[,8]=1
+
+## Virgin Adults --------------------
+## The number of virgin spawners is the number of adults minus the 
+##    number of repeat spawners present
+Virgins=Adults-nrow(Repeats)
+Virgins=matrix(
+  ncol=8,
+  nrow=Virgins
+)
+## The growth coefficient is a random draw from a z distribution
+Virgins[,4]=rnorm(
+  n=nrow(Virgins),
+  mean=0,
+  sd=1
+)
+## Fish in the upper 10% of the distribution are grilse
+Virgins[,7]=2
+Virgins[,7]=ifelse(
+  Virgins[,4]>=1.28,
+  1,
+  Virgins[,7]
+)
+## Fish in the lower 3% of the distribution are MSW
+Virgins[,7]=ifelse(
+  Virgins[,4]<(-1.87),
+  3,
+  Virgins[,7]
+)
+## Set the sizes of fish based on the starting size distribution
+##    selected and at sea growth
+Virgins[,2]=ifelse(
+  Virgins[,7]==1,
+  rnorm(
+    n=nrow(Virgins),
+    mean=m1,
+    sd=sd1
+  ),
+  ifelse(
+    Virgins[,7]==2,
+    rnorm(
+      n=nrow(Virgins),
+      mean=m2,
+      sd=sd2
+    ),
+    rnorm(
+      n=nrow(Virgins),
+      mean=m3,
+      sd=sd3
+    )
+  )
+)
+Virgins[,2]=Virgins[,2]+sample(
+  x=maxGrowth,
+  size=nrow(Virgins),
+  replace=TRUE
+)
+## Set sex of fish based on life history (i.e., most grilse are males
+##    and most 2SW and MSW are females)
+Virgins[,1]=ifelse(
+  Virgins[,7]==1,
+  rbinom(
+    n=nrow(Virgins),
+    size=1,
+    prob=0.015
+  ),
+  rbinom(
+    n=nrow(Virgins),
+    size=1,
+    prob=0.55
+  )
+)
+## Set maturity thresholds based on life history
+Virgins[,c(5,6)]=0
+Virgins[,5]=ifelse(
+  Virgins[,7]>=2,
+  rtruncnorm(
+    n=nrow(Virgins),
+    a=Virgins[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  rtruncnorm(
+    n=nrow(Virgins),
+    a=-10000,
+    b=Virgins[,4],
+    mean=0,
+    sd=1
+  )
+)
+Virgins[,6]=ifelse(
+  Virgins[,7]==3,
+  rtruncnorm(
+    n=nrow(Virgins),
+    a=-10000,
+    b=Virgins[,5],
+    mean=0,
+    sd=1
+  ),
+  Virgins[,6]
+)
+Virgins[,6]=ifelse(
+  Virgins[,7]==2,
+  rtruncnorm(
+    n=nrow(Virgins),
+    a=-10000,
+    b=Virgins[,4],
+    mean=0,
+    sd=1
+  ),
+  Virgins[,6]
+)
+Virgins[,6]=ifelse(
+  Virgins[,7]==1,
+  rtruncnorm(
+    n=nrow(Virgins),
+    a=Virgins[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  Virgins[,6]
+)
+## By definition, virgin spawners have no previous spawning events
+Virgins[,8]=0
