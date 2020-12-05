@@ -546,3 +546,51 @@ Virgins[,6]=ifelse(
 )
 ## By definition, virgin spawners have no previous spawning events
 Virgins[,8]=0
+## 3SW Juveniles -------------------
+Juveniles3=matrix(
+  ncol=8,
+  nrow=Juveniles3
+)
+## Growth coefficient should be in the lowest 3%
+Juveniles3[,4]=rtruncnorm(
+  n=nrow(Juveniles3),
+  a=-10000,
+  b=-1.87,
+  mean=0,
+  sd=1
+)
+## The grilse threshold must be higher than the growth coefficient
+Juveniles3[,5]=rtruncnorm(
+  n=nrow(Juveniles3),
+  a=Juveniles3[,4],
+  b=-1.87,
+  mean=0,
+  sd=1
+)
+## The 2SW threshold should be lower than the grilse threshold, but
+##    higher than the growth value
+Juveniles3[,6]=rtruncnorm(
+  n=nrow(Juveniles3),
+  a=Juveniles3[,5],
+  b=Juveniles3[,4],
+  mean=0,
+  sd=1
+)
+## 3SW juveniles mature at 3SW
+Juveniles3[,7]=3
+## Which means they are 5 years old
+Juveniles3[,3]=5
+## Fork length is drawn from the distributions specified at the start
+Juveniles3[,2]=rnorm(
+  n=nrow(Juveniles3),
+  mean=m3,
+  sd=sd3
+)
+## The sex distribution of 3SW fish skews towards females (55:45, F:M)
+Juveniles3[,1]=rbinom(
+  n=nrow(Juveniles3),
+  size=1,
+  prob=0.55
+)
+## Juveniles have never spawned previously
+Juveniles3[,8]=0
