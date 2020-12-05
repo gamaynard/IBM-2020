@@ -296,3 +296,128 @@ Recon[,6]=ifelse(
   ),
   Recon[,6]
 )
+## For the purposes of initializing the model, all reconditioned 
+##    spawners are assumed to have one prior spawning event
+Recon[,8]=1
+## Repeat Spawners  --------------------
+Repeats=matrix(
+  ncol=8,
+  nrow=Repeats
+)
+## The growth coefficient is a random draw from a z distribution
+Repeats[,4]=rnorm(
+  n=nrow(Repeats),
+  mean=0,
+  sd=1
+)
+## Fish in the upper 10% of the distribution are grilse
+Repeats[,7]=2
+Repeats[,7]=ifelse(
+  Repeats[,4]>=1.28,
+  1,
+  Repeats[,7]
+)
+## Fish in the lower 3% of the distribution are MSW
+Repeats[,7]=ifelse(
+  Repeats[,4]<(-1.87),
+  3,
+  Repeats[,7]
+)
+## Set the sizes of fish based on the starting size distribution
+##    selected and at sea growth
+Repeats[,2]=ifelse(
+  Repeats[,7]==1,
+  rnorm(
+    n=nrow(Repeats),
+    mean=m1,
+    sd=sd1
+  ),
+  ifelse(
+    Repeats[,7]==2,
+    rnorm(
+      n=nrow(Repeats),
+      mean=m2,
+      sd=sd2
+    ),
+    rnorm(
+      n=nrow(Repeats),
+      mean=m3,
+      sd=sd3
+    )
+  )
+)
+Repeats[,2]=Repeats[,2]+sample(
+  x=maxGrowth,
+  size=nrow(Repeats),
+  replace=TRUE
+)
+## Set sex of fish based on life history (i.e., most grilse are males
+##    and most 2SW and MSW are females)
+Repeats[,1]=ifelse(
+  Repeats[,7]==1,
+  rbinom(
+    n=nrow(Repeats),
+    size=1,
+    prob=0.015
+  ),
+  rbinom(
+    n=nrow(Repeats),
+    size=1,
+    prob=0.55
+  )
+)
+## Set maturity thresholds based on life history
+Repeats[,c(5,6)]=0
+Repeats[,5]=ifelse(
+  Repeats[,7]>=2,
+  rtruncnorm(
+    n=nrow(Repeats),
+    a=Repeats[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  rtruncnorm(
+    n=nrow(Repeats),
+    a=-10000,
+    b=Repeats[,4],
+    mean=0,
+    sd=1
+  )
+)
+Repeats[,6]=ifelse(
+  Repeats[,7]==3,
+  rtruncnorm(
+    n=nrow(Repeats),
+    a=-10000,
+    b=Repeats[,5],
+    mean=0,
+    sd=1
+  ),
+  Repeats[,6]
+)
+Repeats[,6]=ifelse(
+  Repeats[,7]==2,
+  rtruncnorm(
+    n=nrow(Repeats),
+    a=-10000,
+    b=Repeats[,4],
+    mean=0,
+    sd=1
+  ),
+  Repeats[,6]
+)
+Repeats[,6]=ifelse(
+  Repeats[,7]==1,
+  rtruncnorm(
+    n=nrow(Repeats),
+    a=Repeats[,4],
+    b=10000,
+    mean=0,
+    sd=1
+  ),
+  Repeats[,6]
+)
+## For the purposes of initializing the model, all repeat 
+##    spawners are assumed to have one prior spawning event
+Repeats[,8]=1
