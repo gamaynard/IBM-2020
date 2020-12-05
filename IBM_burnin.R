@@ -563,7 +563,7 @@ Juveniles3[,4]=rtruncnorm(
 Juveniles3[,5]=rtruncnorm(
   n=nrow(Juveniles3),
   a=Juveniles3[,4],
-  b=-1.87,
+  b=Inf,
   mean=0,
   sd=1
 )
@@ -571,8 +571,8 @@ Juveniles3[,5]=rtruncnorm(
 ##    higher than the growth value
 Juveniles3[,6]=rtruncnorm(
   n=nrow(Juveniles3),
-  a=Juveniles3[,5],
-  b=Juveniles3[,4],
+  a=Juveniles3[,4],
+  b=Juveniles3[,5],
   mean=0,
   sd=1
 )
