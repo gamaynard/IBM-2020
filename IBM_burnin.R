@@ -594,3 +594,68 @@ Juveniles3[,1]=rbinom(
 )
 ## Juveniles have never spawned previously
 Juveniles3[,8]=0
+
+## 2SW Juveniles -------------------
+Juveniles2=matrix(
+  ncol=8,
+  nrow=Juveniles2
+)
+## Growth coefficient should be set to mature as a 3SW or 2SW
+Juveniles2[,4]=rtruncnorm(
+  n=nrow(Juveniles2),
+  a=-10000,
+  b=1.28,
+  mean=0,
+  sd=1
+)
+## The grilse threshold must be higher than the growth coefficient
+Juveniles2[,5]=rtruncnorm(
+  n=nrow(Juveniles2),
+  a=Juveniles2[,4],
+  b=10000,
+  mean=0,
+  sd=1
+)
+## The 2SW threshold should be lower than the grilse threshold
+Juveniles2[,6]=rtruncnorm(
+  n=nrow(Juveniles2),
+  a=Juveniles2[,5],
+  b=10000,
+  mean=0,
+  sd=1
+)
+## 2SW juveniles mature at 3SW or 2SW depending on their growth and 
+##    maturation threshold levels
+Juveniles2[,7]=ifelse(
+  Juveniles2[,4]<Juveniles2[,6],
+  3,
+  2
+)
+## They are currently 4 years old 
+Juveniles2[,3]=4
+## Fork length is drawn from the distributions specified at the start
+Juveniles2[,2]=ifelse(
+  Juveniles2[,7]==2,
+  rnorm(
+    n=nrow(Juveniles2),
+    mean=m2,
+    sd=sd2
+  ),
+  ifelse(
+    Juveniles2[,7]==3,
+    rnorm(
+      nrow(Juveniles2),
+      m3,
+      sd3
+    ),
+    Juveniles[,2]
+  )
+)
+## The sex distribution of 2SW fish skews towards females (55:45, F:M)
+Juveniles2[,1]=rbinom(
+  n=nrow(Juveniles2),
+  size=1,
+  prob=0.55
+)
+## Juveniles have never spawned previously
+Juveniles2[,8]=0
