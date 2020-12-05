@@ -123,17 +123,17 @@ Parr2=Parr1
 ##    survival and at sea survival
 ## 1SW juveniles
 Juveniles1=round(
-  Parr2*0.99^rkm*marineSurvival^2,
+  Parr2*0.99^rkm*marineSurvival^1,
   0
 )
 ## 2SW juveniles
 Juveniles2=round(
-  Parr2*0.99^rkm*marineSurvival^3,
+  Parr2*0.99^rkm*marineSurvival^2,
   0
 )
 ## 3SW juveniles
 Juveniles3=round(
-  Parr2*0.99^rkm*marineSurvival^4,
+  Parr2*0.99^rkm*marineSurvival^3,
   0
 )
 
@@ -659,3 +659,133 @@ Juveniles2[,1]=rbinom(
 )
 ## Juveniles have never spawned previously
 Juveniles2[,8]=0
+
+## 1SW Juveniles -------------------
+Juveniles1=matrix(
+  ncol=8,
+  nrow=Juveniles1
+)
+## Growth coefficient can be anywhere in the z distribution
+Juveniles1[,4]=rnorm(
+  n=nrow(Juveniles1),
+  mean=0,
+  sd=1
+)
+## The fastest growing fish mature as grilse, moderate growers
+##    mature as 2SW fish and slow growers mature as 3SW fish
+Juveniles1[,7]=ifelse(
+  Juveniles1[,4]>=1.28,
+  1,
+  ifelse(
+    Juveniles1[,4]>-1.87&Juveniles1[,4]<1.28,
+    2,
+    ifelse(
+      Juveniles1[,4]<(-1.87),
+      3,
+      Juveniles1[,4]
+    )
+  )
+)
+## These fish are three years old
+Juveniles1[,3]=3
+## Fork length is drawn from the distributions specified at the start
+Juveniles1[,2]=ifelse(
+  Juveniles1[,7]==2,
+  rnorm(
+    n=nrow(Juveniles1),
+    mean=m2,
+    sd=sd2
+  ),
+  ifelse(
+    Juveniles1[,7]==3,
+    rnorm(
+      nrow(Juveniles1),
+      m3,
+      sd3
+    ),
+    ifelse(
+      Juveniles1[,7]==1,
+      rnorm(
+        nrow(Juveniles1),
+        m1,
+        sd1
+      ),
+      Juveniles1[,7]
+    )
+  )
+)
+## The sex distribution of 2+SW fish skews towards females (55:45, 
+##    F:M), but the sex distribution of 1SW fish skews towards males
+##    (98.5:1.5)
+Juveniles1[,1]=ifelse(
+  Juveniles1[,7]>=2,
+  rbinom(
+    n=nrow(Juveniles1),
+    size=1,
+    prob=0.55
+  ),
+  ifelse(
+    Juveniles1[,7]==1,
+    rbinom(
+      n=nrow(Juveniles1),
+      size=1,
+      prob=0.015
+    ),
+    Juveniles1[,7]
+  )
+)
+## Juveniles have never spawned previously
+Juveniles1[,8]=0
+## Assign maturity thresholds
+Juveniles1[,6]=ifelse(
+  Juveniles1[,7]==3,
+  rtruncnorm(
+    n=nrow(Juveniles1),
+    a=Juveniles1[,4],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Juveniles1[,7]==2,
+    rtruncnorm(
+      n=nrow(Juveniles1),
+      a=-Inf,
+      b=Juveniles1[,4],
+      mean=0,
+      sd=1
+    ),
+    ifelse(
+      Juveniles1[,7]==1,
+      rtruncnorm(
+        n=nrow(Juveniles1),
+        a=-Inf,
+        b=Juveniles1[,4],
+        mean=0,
+        sd=1
+      ),
+      Juveniles1[,6]
+    )
+  )
+)
+Juveniles1[,5]=ifelse(
+  Juveniles1[,7]>=2,
+  rtruncnorm(
+    n=nrow(Juveniles1),
+    a=Juveniles1[,6],
+    b=Inf,
+    mean=0,
+    sd=1
+  ),
+  ifelse(
+    Juveniles1[,7]==1,
+    rtruncnorm(
+      n=nrow(Juveniles1),
+      a=Juveniles1[,6],
+      b=Juveniles1[,4],
+      mean=0,
+      sd=1
+    ),
+    Juveniles1[,5]
+  )
+)
