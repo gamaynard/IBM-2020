@@ -9,4 +9,5 @@ In the original burnin.R file, initialized juvenile survival was subjected to ou
 In the original burnin.R file, initialized kelt survival was subjected to outmigrating mortality at dams. This would have the effect of reducing the number of reconditioning fish available to start the "natural" population in the burnin-in period. 
 
 **HERITABILITY**
+
 Changed from a uniform distribution -2.5 to 2.5 to a normal distribution (mean = 0, sd = 1)
