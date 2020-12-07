@@ -1269,7 +1269,7 @@ for(b in 1:maxBurn){
     ## Females
     fSpawners=matrix(
       data=subset(
-        Spanwers,
+        Spawners,
         Spawners[,1]==1
       ),
       ncol=8
@@ -1300,7 +1300,106 @@ for(b in 1:maxBurn){
     ## If there are more male spawners than female spawners, assign mates based
     ##    on the advantage given to large 2+SW males in the variable "mating"
     if(nrow(fSpawners)<nrow(mSpawners)){
-      
+      mateProb=ifelse(
+        mSpawners[,7]==1,
+        1,
+        mating
+      )
+      mateProb=mateProb/sum(mateProb)
+      a=sample(
+        x=nrow(mSpawners),
+        size=nrow(fSpawners),
+        replace=FALSE,
+        prob=mateProb
+      )
+      mSpawners=matrix(
+        data=mSpawners[a,],
+        ncol=8
+      )
+    }
+  ## Once you have an even number of female and male fish, assign each fish a 
+  ##    z-standardized fork length based on the starting distributions of fork
+  ##    lengths specified at the beginning of the simulation
+  ## Females
+  fFL=vector(
+    length=nrow(fSpawners)
+  )
+  fFL=ifelse(
+    fSpawners[,7]==1,
+    (fSpawners[,2]-m1)/sd1,
+    ifelse(
+      fSpawners[,7]==2,
+      (fSpawners[,2]-m2)/sd2,
+      ifelse(
+        fSpawners[,7]==3,
+        (fSpawners[,2]-m3)/sd3,
+        fFL
+      )
+    )
+  )
+  ## Males
+  mFL=vector(
+    length=nrow(mSpawners)
+  )
+  mFL=ifelse(
+    mSpawners[,7]==1,
+    (mSpawners[,2]-m1)/sd1,
+    ifelse(
+      mSpawners[,7]==2,
+      (mSpawners[,2]-m2)/sd2,
+      ifelse(
+        mSpawners[,7]==3,
+        (mSpawners[,2]-m3)/sd3,
+        mFL
+      )
+    )
+  )
+  ## Calculate the number of eggs produced by each spawning pair based on female
+  ##    size, per 
+  ## Heinimaa, S. and P. Heinimaa. 2004. Effect of female size on egg quality
+  ##    and fecundity of the wild Atlantic Salmon in the sub-Arctic River Teno. 
+  ##    Boreal Environmental Research. 9:55-62.
+  ##    ISSN: 1239-6095
+  ## S is the total number of eggs produced in the system (single number)
+  S=sum(
+    round(
+      exp(3.07*log(fSpawners[,2])-4.46),
+      0
+    ),
+    na.rm=TRUE
+  )
+  ## spawn is the total number of eggs produced per pair (vector)
+  spawn=round(
+    exp(3.07*log(fSpawners[,2])-4.46),
+    0
+  )
+  ## If there are no spawning pairs, set both S and spawn to 0
+  } else {
+    S=0
+    spawn=0
+  }
+  ## As long as there is at least one female fish and one male fish
+  if(
+    exists("fSpawners")&&
+    exists("mSpawners")&&
+    nrow(fSpawners)*nrow(mSpawners)!=0
+  ){
+    ## Pair off the adults
+    if(sheritability!=0){
+      Sizes=c(
+        fFL,
+        mFL
+      )
+      Sizes=Sizes*sheritability+rnorm(length(Sizes),0,1)*(1-sheritability)
+      spawnProb1=rep(
+        spawn/sum(spawn),
+        2
+      )
+    }
+    if(gheritability!=0){
+      Growth=c(
+        fSpawners[,4],
+        mSpawners[,4]
+        )
     }
   }
-}
