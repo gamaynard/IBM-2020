@@ -1390,6 +1390,7 @@ for(b in 1:maxBurn){
         fFL,
         mFL
       )
+      ## Create a vector of potential sizes using the specified size heritability
       Sizes=Sizes*sheritability+rnorm(length(Sizes),0,1)*(1-sheritability)
       spawnProb1=rep(
         spawn/sum(spawn),
@@ -1401,5 +1402,61 @@ for(b in 1:maxBurn){
         fSpawners[,4],
         mSpawners[,4]
         )
+      ## Create a vector of possible growths using the growth heritability value
+      Growth=Growth*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      ## Grilse and 2SW thresholds are also inherited based on growth heritability
+      tGrilse=na.omit(
+        c(
+          fSpawners[,5],
+          mSpawners[,5]
+        )
+      )
+      tGrilse=tGrilse*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      t2SW=na.omit(
+        c(
+          fSpawners[,6],
+          mSpawners[,6]
+        )
+      )
+      t2SW=t2SW*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      spawnProb2=rep(spawn/sum(spawn),2)
     }
+    Spawners=rbind(
+      fSpawners,
+      mSpawners
+      )
+    ## All spawners get one spawning season added to their total
+    Spawners[,8]=Spawners[,8]+1
   }
+  ## Any reconditioned fish at sea prepare to join the next spawning migration
+  Repeats=matrix(
+    data=Recon[,1:8],
+    ncol=8
+  )
+  ## All reconditioned fish grow
+  Repeats[,2]=Repeats[,2]+sample(
+    x=maxGrowth,
+    nrow(Repeats),
+    replace=TRUE
+  )
+  ## Clear the unnecessary recon matrix
+  rm(Recon)
+  ## Create a new recon matrix populated by surviving kelts
+  Recon=matrix(
+    data=Spawners[which(
+      rbinom(
+        n=nrow(Spawners),
+        1,
+        0.63*marineSurvival
+      )==1
+    ),1:8],
+    ncol=8
+  )
+  Recon=matrix(
+    data=Recon[,1:8],
+    ncol=8
+  )
+  ## Clear the old Spawner matrix
+  rm(Spawners)
+  
+}
