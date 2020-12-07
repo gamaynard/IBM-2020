@@ -1178,3 +1178,70 @@ Parr0[,5]=ifelse(
     Parr0[,5]
   )
 )
+
+
+## Simulation -------------------
+## For each year of burn-in
+for(b in 1:maxBurn){
+  ## Pull together all in-migrating adults into one matrix
+  Adults=rbind(
+    Virgins,
+    Repeats
+  )
+  ## In the burn in, there are no dams, so all adults are assumed
+  ## to reach the spawning grounds
+  Spawners=Adults
+  ## Select which juveniles will mature and which will remain in
+  ## salt water
+  J1=which(Juveniles1[,3]-2>=Juveniles1[,7])
+  J2=which(Juveniles2[,3]-2>=Juveniles2[,7])
+  ## Create a new matrix of virgin spawners for next season
+  Virgins=rbind(
+    Juveniles3,
+    Juveniles2[J2,],
+    Juveniles1[J1,]
+  )
+  ## Progress any 2 year juveniles that didn't mature
+  Juveniles3=matrix(
+    data=Juveniles2[-J2,],
+    ncol=8
+  )
+  ## Apply marine mortality
+  Juveniles3=matrix(
+    Juveniles3[which(
+      rbinom(
+        n=nrow(Juveniles3),
+        1,
+        marineSurvival
+      )==1
+    ),],
+    ncol=8
+  )
+  ## Progress any 1 year juveniles that didn't mature
+  Juveniles2=matrix(
+    data=Juveniles1[-J1,],
+    ncol=8
+  )
+  ## Apply marine mortality
+  Juveniles2=matrix(
+    Juveniles2[which(
+      rbinom(
+        n=nrow(Juveniles2),
+        1,
+        marineSurvival
+      )==1
+    ),],
+    ncol=8
+  )
+  ## Progress any smolts that survive the outmigration
+  Smolts=matrix(
+    data=Parr2[which(
+      rbinom(
+        n=nrow(Parr2),
+        1,
+        0.99^rkm
+      )==1
+    ),],
+    ncol=8
+  )
+}
