@@ -1244,4 +1244,63 @@ for(b in 1:maxBurn){
     ),],
     ncol=8
   )
+  Juveniles1=matrix(
+    data=Smolts[which(
+      rbinom(
+        n=nrow(Smolts),
+        1,
+        marineSurvival
+      )==1
+    ),],
+    ncol=8
+  )
+  ## Year 1 Parr and Young of Year Parr progess without any additional mortality
+  ##    because all freshwater mortality is applied in the egg --> young of year
+  ##    parr transition
+  Parr2=Parr1
+  Parr1=Parr0
+  ## Clean up unused matrices
+  rm(Parr0)
+  rm(Smolts)
+  rm(Adults)
+  ## If there are enough spawners, separate out males and females to create a 
+  ##    spawning event
+  if(nrow(Spawners)>1){
+    ## Females
+    fSpawners=matrix(
+      data=subset(
+        Spanwers,
+        Spawners[,1]==1
+      ),
+      ncol=8
+    )
+    ## Males
+    mSpawners=matrix(
+      data=subset(
+        Spawners,
+        Spawners[,1]==0
+      ),
+      ncol=8
+    )
+    ## If the number of female spawners is equal to the number of male spawners,
+    ##    no action is necessary
+    ## If there are more female spawners than male spawners, randomly assign
+    ##    spawning pairs
+    if(nrow(fSpawners)>nrow(mSpawners)){
+      a=sample(
+        x=nrow(fSpawners),
+        size=nrow(mSpawners),
+        replace=FALSE,
+      )
+      fSpawners=matrix(
+        data=fSpawners[a,],
+        ncol=8
+      )
+    }
+    ## If there are more male spawners than female spawners, assign mates based
+    ##    on the advantage given to large 2+SW males in the variable "mating"
+    if(nrow(fSpawners)<nrow(mSpawners)){
+      
+    }
+  }
 }
