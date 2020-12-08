@@ -11,3 +11,7 @@ In the original burnin.R file, initialized kelt survival was subjected to outmig
 **HERITABILITY**
 
 Changed from a uniform distribution -2.5 to 2.5 to a normal distribution (mean = 0, sd = 1)
+
+**SIZE OF OFFSPRING**
+
+In the original model, offspring were simply drawn from a distribution of individual parent sizes that had a random, environmental component already applied. In the new version, offspring are drawn from a vector of mid-parent sizes and the random environmental component is applied to each individual offspring. Instead of two sets of identical offspring from a spawning event, there are an infinite number of types of offspring from a spawning event. 
