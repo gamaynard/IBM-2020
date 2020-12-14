@@ -1386,40 +1386,48 @@ for(b in 1:maxBurn){
   ){
     ## Pair off the adults
     if(sheritability!=0){
-      Sizes=c(
-        fFL,
-        mFL
-      )
+      ## The original code is single commented in this section
+      # Sizes=c(
+      #   fFL,
+      #   mFL
+      # )
+      ## Averaged size between parents
+      Sizes=(fFL+mFL)/2
       ## Create a vector of potential sizes using the specified size heritability
-      Sizes=Sizes*sheritability+rnorm(length(Sizes),0,1)*(1-sheritability)
-      spawnProb1=rep(
-        spawn/sum(spawn),
-        2
-      )
+      # Sizes=Sizes*sheritability+rnorm(length(Sizes),0,1)*(1-sheritability)
+      # spawnProb1=rep(
+      #   spawn/sum(spawn),
+      #   2
+      # )
+      spawnProb1=spawn/sum(spawn)
     }
     if(gheritability!=0){
-      Growth=c(
-        fSpawners[,4],
-        mSpawners[,4]
-        )
+      ## The original code is single commented in this section
+      # Growth=c(
+      #   fSpawners[,4],
+      #   mSpawners[,4]
+      #   )
+      Growth=(fSpawners[,4]+mSpawners[,4])/2
       ## Create a vector of possible growths using the growth heritability value
-      Growth=Growth*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      # Growth=Growth*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
       ## Grilse and 2SW thresholds are also inherited based on growth heritability
-      tGrilse=na.omit(
-        c(
-          fSpawners[,5],
-          mSpawners[,5]
-        )
-      )
-      tGrilse=tGrilse*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
-      t2SW=na.omit(
-        c(
-          fSpawners[,6],
-          mSpawners[,6]
-        )
-      )
-      t2SW=t2SW*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
-      spawnProb2=rep(spawn/sum(spawn),2)
+      # tGrilse=na.omit(
+      #   c(
+      #     fSpawners[,5],
+      #     mSpawners[,5]
+      #   )
+      # )
+      tGrilse=(fSpawners[,5]+mSpawners[,5])/2
+      # tGrilse=tGrilse*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      # t2SW=na.omit(
+      #   c(
+      #     fSpawners[,6],
+      #     mSpawners[,6]
+      #   )
+      # )
+      # t2SW=t2SW*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
+      t2SW=(fSpawners[,6]+mSpawners[,6])/2
+      # spawnProb2=rep(spawn/sum(spawn),2)
     }
     Spawners=rbind(
       fSpawners,
@@ -1458,5 +1466,132 @@ for(b in 1:maxBurn){
   )
   ## Clear the old Spawner matrix
   rm(Spawners)
-  
+  ## Build a new Young of Year Parr matrix
+  Parr0=matrix(
+    ncol=8,
+    nrow=round(
+      S*exp(A-B*S)*freshwaterSurvival,
+      0
+    )
+  )
+  if(nrow(Parr0)>0){
+    ## Assign each fish a size (inherited from parents)
+    Parr0[,2]=sample(
+      x=Sizes,
+      size=nrow(Parr0),
+      prob=spawnProb1,
+      replace=TRUE
+    )
+    ## Apply environmental variability to size
+    Parr0[,2]=(Parr0[,2]*sheritability)+(rnorm(
+      n=nrow(Parr0),
+      mean=0,
+      sd=1
+    )*(1-sheritability))
+    ## Assign each fish a growth parameter (inherited from parents)
+    Parr0[,4]=sample(
+      x=Growth,
+      size=nrow(Parr0),
+      prob=spawnProb1,
+      replace=TRUE
+    )
+    ## Apply environmental variability to growth
+    Parr0[,4]=(Parr0[,4]*gheritability)+(rnorm(
+      n=nrow(Parr0),
+      mean=0,
+      sd=1
+    )*(1-gheritability))
+    ## Assign maturity thresholds (inherited from parents)
+    Parr0[,5]=sample(
+      x=tGrilse,
+      size=nrow(Parr0),
+      prob=spawnProb1,
+      replace=TRUE
+    )
+    Parr0[,6]=sample(
+      x=t2SW,
+      size=nrow(Parr0),
+      prob=spawnProb1,
+      replace=TRUE
+    )
+    ## Apply environmental variability
+    Parr0[,5]=(Parr0[,5]*gheritability)+(rnorm(
+      n=nrow(Parr0),
+      mean=0,
+      sd=1
+    )*(1-gheritability))
+    Parr0[,6]=(Parr0[,6]*gheritability)+(rnorm(
+      n=nrow(Parr0),
+      mean=0,
+      sd=1
+    )*(1-gheritability))
+    ## Compare thresholds to growth parameter and assign a value for seawinters
+    ##    at maturity
+    Parr0[,7]=ifelse(
+      Parr0[,4]<Parr0[,6],
+      3,
+      ifelse(
+        Parr0[,4]>Parr0[,5],
+        1,
+        ifelse(
+          is.na(Parr0[,7]),
+          2,
+          Parr0[,7]
+        )
+      )
+    )
+    ## Calculate size at maturity for each fish using its z-standardized growth
+    ##    and the size distribution selected at the beginning of the simulation
+    Parr0[,2]=ifelse(
+      Parr0[,7]==1,
+      Sizes*sd1+m1,
+      ifelse(
+        Parr0[,7]==2,
+        Sizes*sd2+m2,
+        ifelse(
+          Parr0[,7]>=3,
+          Sizes*sd3+m3,
+          Parr0[,2]
+        )
+      )
+    )
+    ## Assign each fish a sex based on its assigned SW at maturity
+    Parr0[,1]=ifelse(
+      Parr0[,7]==1,
+      rbinom(
+        nrow(Parr0),
+        1,
+        0.015
+      ),
+      rbinom(
+        nrow(Parr0),
+        1,
+        0.55
+      )
+    )
+    ## Ensure that 2SW maturation thresholds are lower than 1SW maturation 
+    ##    thresholds
+    while(sum(Parr0[,6]>Parr0[,5])>0){
+      Parr0[,6]=ifelse(
+        Parr0[,6]>Parr0[,5],
+        Parr0[,6]-0.1,
+        Parr0[,6]
+      )
+    }
+    ## All YOY have 0 prior spawns
+    Parr0[,8]=0
+  }
+  ## Increase the ages of all fish except YOY
+  Repeats[,3]=Repeats[,3]+1
+  Recon[,3]=Recon[,3]+1
+  Juveniles1[,3]=Juveniles1[,3]+1
+  Juveniles2[,3]=Juveniles2[,3]+1
+  Juveniles3[,3]=Juveniles3[,3]+1
+  Parr2[,3]=Parr2[,3]+1
+  Parr1[,3]=Parr1[,3]+1
+  ## Move the progress bar forward
+  setTxtProgressBar(
+    pb=bpb,
+    value=b/maxBurn
+  )
 }
