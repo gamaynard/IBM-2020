@@ -66,7 +66,8 @@ rm(
       "maxGrowth",
       "s",
       "i",
-      "cc"
+      "cc",
+      "db"
     )
   )
 )
@@ -106,6 +107,18 @@ if(startSize=="modern"){
 ## Set a starting number of eggs based on carrying capacity of eggs per
 ##    m2 of spawning habitat
 S=cc*W
+
+## If debugging, create a blank plot
+if(db==TRUE){
+  plot(
+    x=1,
+    y=1,
+    type='n',
+    xlim=c(0,maxBurn),
+    ylim=c(0,2500)
+  )
+  abline(h=c(300,800),lty=2)
+}
 
 ## Initialize number of parr present based on the number of eggs and
 ##    freshwater survival
@@ -1464,6 +1477,9 @@ for(b in 1:maxBurn){
     data=Recon[,1:8],
     ncol=8
   )
+  if(db==TRUE){
+    points(nrow(Spawners)~b)
+  }
   ## Clear the old Spawner matrix
   rm(Spawners)
   ## Build a new Young of Year Parr matrix
@@ -1578,8 +1594,9 @@ for(b in 1:maxBurn){
         Parr0[,6]
       )
     }
-    ## All YOY have 0 prior spawns
+    ## All YOY have 0 prior spawns and are 0 years old
     Parr0[,8]=0
+    Parr0[,3]=0
   }
   ## Increase the ages of all fish except YOY
   Repeats[,3]=Repeats[,3]+1

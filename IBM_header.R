@@ -30,6 +30,8 @@ options(
   scipen=6,
   digits=4
 )
+## Do you want diagnostic plots periodically?
+db=TRUE
 ## -----------------------------------
 ##
 ## Load necessary packages
@@ -65,7 +67,7 @@ simNum=1
 nYears=100
 ## Length of burn-in (when the system will run without dams for a time
 ##    in order to stabilize). Time is in years. 
-maxBurn=20
+maxBurn=100
 ## Parameterize the river system length (km) and wetted habitat area
 ##    (m2). These values were taken from the description of the 
 ##    Narraguagus River in the 2015 Annual Report of the U.S. Atlantic
