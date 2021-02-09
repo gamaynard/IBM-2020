@@ -1423,7 +1423,10 @@ for(b in 1:maxBurn){
       #   fSpawners[,4],
       #   mSpawners[,4]
       #   )
-      Growth=(fSpawners[,4]+mSpawners[,4])/2
+      Growth=cbind(fSpawners[,4],mSpawners[,4])
+      Growth=cbind(Growth,(Growth[,1]+Growth[,2])/2)
+      Growth=cbind(Growth,abs(Growth[,3]-Growth[,2]))
+      Growth=cbind(Growth,spawn/sum(spawn))
       ## Create a vector of possible growths using the growth heritability value
       # Growth=Growth*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
       ## Grilse and 2SW thresholds are also inherited based on growth heritability
