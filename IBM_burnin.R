@@ -1448,7 +1448,10 @@ for(b in 1:maxBurn){
       #   )
       # )
       # t2SW=t2SW*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
-      t2SW=(fSpawners[,6]+mSpawners[,6])/2
+      t2SW=cbind(fSpawners[,6],mSpawners[,6])
+      t2SW=cbind(t2SW,(t2SW[,1]+t2SW[,2])/2)
+      t2SW=cbind(t2SW,abs(t2SW[,3]-t2SW[,2]))
+      t2SW=cbind(t2SW,spawn/sum(spawn))
       # spawnProb2=rep(spawn/sum(spawn),2)
     }
     Spawners=rbind(
