@@ -1503,55 +1503,57 @@ for(b in 1:maxBurn){
     )
   )
   if(nrow(Parr0)>0){
-    ## Assign each fish a size (inherited from parents)
-    Parr0[,2]=sample(
-      x=Sizes,
+    ## Assign each fish a parentage
+    parents=sample(
+      x=seq(1,nrow(sizes),1),
       size=nrow(Parr0),
-      prob=spawnProb1,
+      prob=sizes[,5],
       replace=TRUE
     )
+    ## Use parentage to assign traits to each individual
+    for(pa in unique(parents)){
+      Parr0[,2]=ifelse(
+        parents==pa,
+        rnorm(1,mean=sizes[pa,3],sd=sizes[pa,4]),
+        Parr0[,2]
+        )
+      Parr0[,4]=ifelse(
+        parents==pa,
+        rnorm(1,mean=Growth[pa,3],sd=Growth[pa,4]),
+        Parr0[,4]
+      )
+      Parr0[,5]=ifelse(
+        parents==pa,
+        rnorm(1,mean=tGrilse[pa,3],sd=tGrilse[pa,4]),
+        Parr0[,5]
+      )
+      Parr0[,6]=ifelse(
+        parents==pa,
+        rnorm(1,mean=t2SW[pa,3],sd=t2SW[pa,4]),
+        Parr0[,6]
+      )
+    }
     ## Apply environmental variability to size
-    Parr0[,2]=(Parr0[,2]*sheritability)+(rnorm(
+    Parr0[,2]=(Parr0[,2]*sheritability)+(runif(
       n=nrow(Parr0),
-      mean=0,
-      sd=1
+      min=-1.96,
+      max=1.96
     )*(1-sheritability))
-    ## Assign each fish a growth parameter (inherited from parents)
-    Parr0[,4]=sample(
-      x=Growth,
-      size=nrow(Parr0),
-      prob=spawnProb1,
-      replace=TRUE
-    )
     ## Apply environmental variability to growth
-    Parr0[,4]=(Parr0[,4]*gheritability)+(rnorm(
+    Parr0[,4]=(Parr0[,4]*gheritability)+(runif(
       n=nrow(Parr0),
-      mean=0,
-      sd=1
+      min=-1.96,
+      max=1.96
     )*(1-gheritability))
-    ## Assign maturity thresholds (inherited from parents)
-    Parr0[,5]=sample(
-      x=tGrilse,
-      size=nrow(Parr0),
-      prob=spawnProb1,
-      replace=TRUE
-    )
-    Parr0[,6]=sample(
-      x=t2SW,
-      size=nrow(Parr0),
-      prob=spawnProb1,
-      replace=TRUE
-    )
-    ## Apply environmental variability
-    Parr0[,5]=(Parr0[,5]*gheritability)+(rnorm(
+    Parr0[,5]=(Parr0[,5]*gheritability)+(runif(
       n=nrow(Parr0),
-      mean=0,
-      sd=1
+      min=-1.96,
+      max=1.96
     )*(1-gheritability))
-    Parr0[,6]=(Parr0[,6]*gheritability)+(rnorm(
+    Parr0[,6]=(Parr0[,6]*gheritability)+(runif(
       n=nrow(Parr0),
-      mean=0,
-      sd=1
+      min=-1.96,
+      max=1.96
     )*(1-gheritability))
     ## Compare thresholds to growth parameter and assign a value for seawinters
     ##    at maturity
