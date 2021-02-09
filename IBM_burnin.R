@@ -1405,14 +1405,17 @@ for(b in 1:maxBurn){
       #   mFL
       # )
       ## Averaged size between parents
-      Sizes=(fFL+mFL)/2
+      #Sizes=(fFL+mFL)/2
       ## Create a vector of potential sizes using the specified size heritability
       # Sizes=Sizes*sheritability+rnorm(length(Sizes),0,1)*(1-sheritability)
       # spawnProb1=rep(
       #   spawn/sum(spawn),
       #   2
       # )
-      spawnProb1=spawn/sum(spawn)
+      sizes=cbind(fFL,mFL)
+      sizes=cbind(sizes,(sizes[,1]+sizes[,2])/2)
+      sizes=cbind(sizes,abs(sizes[,3]-sizes[,2]))
+      sizes=cbind(sizes,spawn/sum(spawn))
     }
     if(gheritability!=0){
       ## The original code is single commented in this section
