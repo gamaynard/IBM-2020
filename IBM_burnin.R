@@ -1436,7 +1436,10 @@ for(b in 1:maxBurn){
       #     mSpawners[,5]
       #   )
       # )
-      tGrilse=(fSpawners[,5]+mSpawners[,5])/2
+      tGrilse=cbind(fSpawners[,5],mSpawners[,5])
+      tGrilse=cbind(tGrilse,(tGrilse[,1]+tGrilse[,2])/2)
+      tGrilse=cbind(tGrilse,abs(tGrilse[,3]-tGrilse[,2]))
+      tGrilse=cbind(tGrilse,spawn/sum(spawn))
       # tGrilse=tGrilse*gheritability+rnorm(length(Sizes),0,1)*(1-gheritability)
       # t2SW=na.omit(
       #   c(
