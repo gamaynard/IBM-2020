@@ -14,8 +14,8 @@
 ##
 ## ---------------------------
 ##
-## Notes:
-##   
+## Notes: This file is not actually used for analysis, just to ensure that the
+##    IBM_burnin.R script runs correctly and consistently    
 ##
 ## ---------------------------
 
