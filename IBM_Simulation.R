@@ -1,15 +1,18 @@
 ## -----------------------------------
 ##
-## Script Name: IBM_burnin.R
+## Script Name: IBM_Simulation.R
 ##
-## Purpose of Script: This script runs as an undammed system for a period
-##    of years specified by the user before handing off the virtual 
-##    salmon to the simulation script. It ensures that the simulations
-##    are all stable before starting. 
+## Purpose of Script: This script lays out a system parameterized by the user
+##	in IBM_header.R and simulates salmon runs in that system for a period
+##	of years specified in the header file. The first year of the simulation
+##	uses the final year of the burn-in to parameterize the salmon population
+##	at different life history stages. This script is not designed to be run
+##	on its own and should be called from IBM_header.R to ensure all dependencies
+##	are met.  
 ## 
 ## Author: George A. Maynard
 ## 
-## Date Created: 2020-12-03
+## Date Created: 2020-02-12
 ##
 ## Copyright (c) George Alphonse Maynard, 2020
 ## galphonsemaynard@gmail.com
@@ -33,14 +36,14 @@ options(
 ## -----------------------------------
 ##
 ## Load necessary packages
-##
+## 	This script is designed to be called from another script
+##	<IBM_header.R>
+##	so it should not need to load any additional packages or functions
 ## -----------------------------------
 ##
 ## Load necessary functions
 ##
 ## -----------------------------------
-## Clear the workspace of all extraneous objects (i.e., those not
-##    specified in the list).
 ## Simulation -------------------
 ## For each year of burn-in
 for(year in 1:nYears){
