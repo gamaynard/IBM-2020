@@ -1572,6 +1572,7 @@ for(b in 1:maxBurn){
     )
     ## Calculate size at maturity for each fish using its z-standardized growth
     ##    and the size distribution selected at the beginning of the simulation
+    Sizes=Parr0[,2]
     Parr0[,2]=ifelse(
       Parr0[,7]==1,
       Sizes*sd1+m1,
