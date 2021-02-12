@@ -49,7 +49,7 @@ library(truncnorm)
 ##    Atlantic Salmon population. River Research and Applications.
 ##    33(7) 1004-1015. DOI: 10.1002/rra.3155
 betas=read.csv(
-  file="MFBetas.csv"
+  file="/mnt/md0/Manuscripts/2020 IBM/MFBetas.csv"
   )
 ## Remove any NA values from the beta dataframe
 betas=na.omit(betas)
