@@ -46,6 +46,6 @@ if(db==TRUE){
   )
   abline(h=c(300,800),lty=2)
 }
-for(testBurnin in 1:100){
+for(testBurnin in 1:5){
   source("IBM_burnin.R")
 }
