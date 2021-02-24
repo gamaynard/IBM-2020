@@ -31,7 +31,31 @@ options(
   digits=4
 )
 ## Do you want diagnostic plots periodically?
-db=TRUE
+db=FALSE
+## Read in arguments from the bash terminal
+## Simulation number
+simNum=as.numeric(commandArgs(trailingOnly = TRUE)[1])
+## Narrow sense heritability of size at age (must be between 0 and 1)
+sheritability=as.numeric(commandArgs(trailingOnly = TRUE)[2])
+## Narrow sense heritability of growth rate (must be between 0 and 1)
+gheritability=as.numeric(commandArgs(trailingOnly = TRUE)[3])
+## Number of dams in the system
+nDams=as.numeric(commandArgs(trailingOnly = TRUE)[4])
+## Create a placeholder file to prevent other instances from 
+##    working on this same simulation number
+file.create(
+  paste0(
+    "g",
+    gheritability*10,
+    "s",
+    sheritability*10,
+    "Sim",
+    simNum,
+    "Results",
+    nDams,
+    "Dams.csv"
+  )
+)
 ## -----------------------------------
 ##
 ## Load necessary packages
@@ -55,19 +79,11 @@ betas=read.csv(
 betas=na.omit(betas)
 ## -----------------------------------
 ## SECTION 1: USER INPUTS
-## Narrow sense heritability of size at age (must be between 0 and 1)
-sheritability=0.2
-## Narrow sense heritability of growth rate (must be between 0 and 1)
-gheritability=0.2
-## Number of dams in the system
-nDams=0
-## Number of simulations to run
-simNum=1
 ## Number of years to simulate
 nYears=100
 ## Length of burn-in (when the system will run without dams for a time
 ##    in order to stabilize). Time is in years. 
-maxBurn=100
+maxBurn=20
 ## Parameterize the river system length (km) and wetted habitat area
 ##    (m2). These values were taken from the description of the 
 ##    Narraguagus River in the 2015 Annual Report of the U.S. Atlantic
@@ -154,7 +170,7 @@ cc=6
 s=1
 ## Create a matrix to store simulation results
 Results=matrix(
-  nrow=simNum*nYears,
+  nrow=0,
   ncol=21
 )
 colnames(Results)=c(
@@ -180,13 +196,9 @@ colnames(Results)=c(
   "S2SW",
   "SMSW"
 )
-## For each simulation, loop over the burn-in and simulation
-## scripts and iterate the simulation number
-for(i in 1:simNum){
-  source("IBM_burnin.R")
-  source("IBM_simulation.R")
-  s=s+1
-}
+## Run the burn in and simulation scripts
+source("IBM_burnin.R")
+source("IBM_Simulation.R")
 ## Write the results to a .csv file
 write.csv(
   x=Results,
@@ -195,9 +207,13 @@ write.csv(
     gheritability*10,
     "s",
     sheritability*10,
+    "Sim",
+    simNum,
     "Results",
-    ndams,
+    nDams,
     "Dams.csv"
   ),
   row.names=FALSE
 )
+
+
