@@ -2,21 +2,26 @@
 
 #!/bin/bash
 ## Set heritability values for size and growth
-sH=0.2
-s=${sH: -1}
-gH=0.2
-g=${gH: -1}
-## Set number of dams
-nD=5
-for simNum in {1..100}
+for sH in 0.1 0.2 0.3 0.4 0.5
 	do
-	FILE="g"$g"s"$s"Sim"$simNum"Results"$nD"Dams.csv"
-	if [ -f "$FILE" ]; then
-		echo "$FILE exists."
-	else
-		Rscript IBM_header.R $simNum $sH $gH $nD
-		d=`date`
-		echo "----- Simulation $simNum complete at $d -----"
-	fi
+	s=${sH: -1}
+	for gH in 0.1 0.2 0.3 0.4 0.5
+		do
+		g=${gH: -1}
+		for nD in {0..5}
+			do
+			for simNum in {1..100}
+				do
+				FILE="g"$g"s"$s"Sim"$simNum"Results"$nD"Dams.csv"
+				if [ -f "$FILE" ]; then
+					echo "$FILE exists."
+				else
+					Rscript IBM_header.R $simNum $sH $gH $nD
+					d=`date`
+					echo "----- Simulation $simNum with $nD dams complete at $d -----"
+				fi
+				done
+			done
+		done
 	done
 exit 0
