@@ -12,7 +12,7 @@ for sH in 0.2
 		g=${gH: -1}
 		for nD in {0..5}
 			do
-			for simNum in {1..100}
+			for simNum in {1..10}
 				do
 				FILE="g"$g"s"$s"Sim"$simNum"Results"$nD"Dams.csv"
 				if [ -f "$FILE" ]; then
